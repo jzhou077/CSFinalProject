@@ -58,6 +58,7 @@ class Level:
                 if player1.direction.y > 0:
                     player1.rect.bottom = sprite.rect.top
                     player1.direction.y = 0
+                    player1.on_ground = True
                 elif player1.direction.y < 0:
                     player1.rect.top = sprite.rect.bottom
                     player1.direction.y = 0
@@ -66,9 +67,15 @@ class Level:
                 if player2.direction.y > 0:
                     player2.rect.bottom = sprite.rect.top
                     player2.direction.y = 0
+                    player2.on_ground = True
                 elif player2.direction.y < 0:
                     player2.rect.top = sprite.rect.bottom
                     player2.direction.y = 0
+        
+        if player1.on_ground and player1.direction.y < 0 or player1.direction.y > 1:
+            player1.on_ground = False
+        if player2.on_ground and player2.direction.y < 0 or player2.direction.y > 1:
+            player2.on_ground = False
 
     def run(self):
         self.tiles.draw(self.display_surface)
