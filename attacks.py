@@ -1,9 +1,8 @@
 import pygame
 
-class Fireball(pygame.sprite.Sprite):
+class Nagic(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-
         self.speed = 3
         self.direction = pygame.math.Vector2(0, 0)
     

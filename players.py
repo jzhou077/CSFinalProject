@@ -3,7 +3,7 @@ from settings import *
 from attacks import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, create_magic):
         super().__init__()
         self.image = pygame.Surface((48, 48))
         self.rect = self.image.get_rect(topleft = pos)
@@ -16,6 +16,9 @@ class Player(pygame.sprite.Sprite):
         self.speed = 4
         self.gravity = 0.8
         self.jump_speed = -16
+
+        #magic
+        self.create_magic = create_magic
 
     def apply_gravity(self):
         self.direction.y += self.gravity
@@ -115,22 +118,19 @@ class Player1(Player):
 class Player2(Player):
     def __init__(self, pos):
         super().__init__(pos)
-        self.import_assets('assets/Ghost/')
-        self.image = pygame.image.load('assets/Ghost/run4.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (48, 48))
-        self.status = 'idle1'
+        self.import_assets('assets/Wizard/')
+        self.image = pygame.image.load('assets/Wizard/idle5.png').convert_alpha()
+        # self.image = pygame.transform.scale(self.image, (48, 48))
+        self.status = 'idle5'
         self.facing_right = True
 
     def import_assets(self, asset):
         character_path = asset
-        self.animations = {'run4':[], 'hurt1':[], 'idle1':[]}
+        self.animations = {'run6':[], 'hurt2':[], 'idle5':[], 'jump1':[], 'falling2':[], 'castspell4':[], 'groundrecovery3':[]}
 
         for animation in self.animations.keys():
-            if animation == 'idle1':
-                self.animations[animation] = super().get_frames('assets/Ghost/run4.png', 32, 32, 1.5, (0, 0, 0), 1)
-            else:
-                full_path = character_path + animation + '.png'
-                self.animations[animation] = super().get_frames(full_path, 32, 32, 1.5, (0, 0, 0), int(animation[len(animation) - 1]))
+            full_path = character_path + animation + '.png'
+            self.animations[animation] = super().get_frames(full_path, 32, 32, 1.5, (0, 0, 0), int(animation[len(animation) - 1]))
 
     def animate(self):
         animation = self.animations[self.status]
@@ -147,10 +147,14 @@ class Player2(Player):
             self.image = flipped_image
 
     def get_status(self):
-        if self.direction.x != 0:
-            self.status = 'run4'
+        if self.direction.y < 0:
+            self.status = 'jump1'
+        elif self.direction.y > 0:
+            self.status = 'falling2'
+        elif self.direction.x != 0:
+            self.status = 'run6'
         else:
-            self.status = 'idle1'
+            self.status = 'idle5'
 
     def get_input(self):
         keys = pygame.key.get_pressed()

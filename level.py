@@ -77,6 +77,9 @@ class Level:
         if player2.on_ground and player2.direction.y < 0 or player2.direction.y > 1:
             player2.on_ground = False
 
+    def create_magic(self, style, strength):
+        pass
+
     def run(self):
         self.tiles.draw(self.display_surface)
 
