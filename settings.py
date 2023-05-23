@@ -16,6 +16,6 @@ level_map = [
     ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X']
 ]
 
-tile_size = 48
+tile_size = 32
 SCREEN_WIDTH = len(level_map[0]) * tile_size
 SCREEN_HEIGHT = len(level_map) * tile_size

@@ -5,7 +5,7 @@ from attacks import *
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, create_magic):
         super().__init__()
-        self.image = pygame.Surface((48, 48))
+        self.image = pygame.Surface((32, 32))
         self.rect = self.image.get_rect(topleft = pos)
         self.frame_index = 0
         self.animation_speed = 0.15
@@ -13,9 +13,9 @@ class Player(pygame.sprite.Sprite):
 
         #movement
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 4
+        self.speed = 3
         self.gravity = 0.8
-        self.jump_speed = -16
+        self.jump_speed = -13
 
         #magic
         self.create_magic = create_magic
@@ -51,11 +51,11 @@ class Player(pygame.sprite.Sprite):
         self.keep_on_map()
 
 class Player1(Player):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos, create_magic):
+        super().__init__(pos, create_magic)
         self.import_assets('assets/Devil/')
         self.image = pygame.image.load('assets/Devil/idle1.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (48, 48))
+        self.image = pygame.transform.scale(self.image, (32, 32))
         self.status = 'idle'
         self.facing_left = True
 
@@ -65,7 +65,7 @@ class Player1(Player):
 
         for animation in self.animations.keys():
             full_path = character_path + animation + '.png'
-            self.animations[animation] = super().get_frames(full_path, 16, 16, 3, (0, 0, 0), int(animation[len(animation) - 1]))
+            self.animations[animation] = super().get_frames(full_path, 16, 16, 2, (0, 0, 0), int(animation[len(animation) - 1]))
 
     def animate(self):
         animation = self.animations[self.status]
@@ -116,8 +116,8 @@ class Player1(Player):
         self.animate()
 
 class Player2(Player):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos, create_magic):
+        super().__init__(pos, create_magic)
         self.import_assets('assets/Wizard/')
         self.image = pygame.image.load('assets/Wizard/idle5.png').convert_alpha()
         # self.image = pygame.transform.scale(self.image, (48, 48))
@@ -130,7 +130,7 @@ class Player2(Player):
 
         for animation in self.animations.keys():
             full_path = character_path + animation + '.png'
-            self.animations[animation] = super().get_frames(full_path, 32, 32, 1.5, (0, 0, 0), int(animation[len(animation) - 1]))
+            self.animations[animation] = super().get_frames(full_path, 32, 32, 1, (0, 0, 0), int(animation[len(animation) - 1]))
 
     def animate(self):
         animation = self.animations[self.status]

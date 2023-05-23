@@ -22,10 +22,10 @@ class Level:
                     tile = Tile((x, y), tile_size)
                     self.tiles.add(tile)
                 if cell == 'P1':
-                    player_sprite = Player1((x, y))
+                    player_sprite = Player1((x, y), self.create_magic)
                     self.player1.add(player_sprite)
                 if cell == 'P2':
-                    player_sprite = Player2((x, y))
+                    player_sprite = Player2((x, y), self.create_magic)
                     self.player2.add(player_sprite)
 
     def horizontal_movement(self):
