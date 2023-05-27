@@ -1,6 +1,5 @@
 import pygame
 from settings import *
-from attacks import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, create_magic):
@@ -10,6 +9,8 @@ class Player(pygame.sprite.Sprite):
         self.frame_index = 0
         self.animation_speed = 0.15
         self.on_ground = False
+        self.max_health = 100
+        self.current_health = self.max_health
 
         #movement
         self.direction = pygame.math.Vector2(0, 0)
@@ -19,6 +20,15 @@ class Player(pygame.sprite.Sprite):
 
         #magic
         self.create_magic = create_magic
+        self.attacking = False
+        self.attack_cooldown = 250
+        self.attack_time = None
+
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+
+        if self.attacking and current_time - self.attack_time >= self.attack_cooldown:
+            self.attacking = False
 
     def apply_gravity(self):
         self.direction.y += self.gravity
@@ -46,87 +56,28 @@ class Player(pygame.sprite.Sprite):
             i += 1
         return frames
 
+    def check_alive(self):
+        if self.current_health <= 0:
+            pass
+
     def update(self):
+        self.check_alive()
         self.get_input()
         self.keep_on_map()
+        self.cooldowns()
 
 class Player1(Player):
     def __init__(self, pos, create_magic):
         super().__init__(pos, create_magic)
-        self.import_assets('assets/Devil/')
-        self.image = pygame.image.load('assets/Devil/idle1.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (32, 32))
-        self.status = 'idle'
-        self.facing_left = True
+        self.player_number = 1
+        self.import_assets('assets/Agent/')
+        self.image = None
+        self.status = 'idle2'
+        self.facing = 'right'
 
     def import_assets(self, asset):
         character_path = asset
-        self.animations = {'idle1':[], 'run4':[], 'jump1':[], 'hurt1':[], 'fall1': []}
-
-        for animation in self.animations.keys():
-            full_path = character_path + animation + '.png'
-            self.animations[animation] = super().get_frames(full_path, 16, 16, 2, (0, 0, 0), int(animation[len(animation) - 1]))
-
-    def animate(self):
-        animation = self.animations[self.status]
-
-        self.frame_index += self.animation_speed
-        if self.frame_index >= len(animation):
-            self.frame_index = 0
-
-        image = animation[int(self.frame_index)]
-        if self.facing_left:
-            self.image = image
-        else:
-            flipped_image = pygame.transform.flip(image, True, False)
-            self.image = flipped_image
-
-    def get_status(self):
-        if self.direction.y < 0:
-            self.status = 'jump1'
-        elif self.direction.y > 0:
-            self.status = 'fall1'
-        #add that its running left later
-        elif self.direction.x < 0:
-            self.status = 'run4'
-        elif self.direction.x > 0:
-            self.status = 'run4'
-        else:
-            self.status = 'idle1'
-
-    def get_input(self):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_RIGHT]:
-            self.direction.x = 1
-            self.facing_left = False
-        elif keys[pygame.K_LEFT]:
-            self.direction.x = -1
-            self.facing_left = True
-        elif keys[pygame.K_UP] and self.on_ground:
-            self.jump()
-        elif keys[pygame.K_DOWN]:
-            pass
-        else:
-            self.direction.x = 0
-
-    def update(self):
-        super().update()
-        self.get_status()
-        self.animate()
-
-class Player2(Player):
-    def __init__(self, pos, create_magic):
-        super().__init__(pos, create_magic)
-        self.import_assets('assets/Wizard/')
-        self.image = pygame.image.load('assets/Wizard/idle5.png').convert_alpha()
-        # self.image = pygame.transform.scale(self.image, (48, 48))
-        self.status = 'idle5'
-        self.facing_right = True
-
-    def import_assets(self, asset):
-        character_path = asset
-        self.animations = {'run6':[], 'hurt2':[], 'idle5':[], 'jump1':[], 'falling2':[], 'castspell4':[], 'groundrecovery3':[]}
+        self.animations = {'idle2':[], 'run6':[], 'jumpfall2':[], 'hurt1':[]}
 
         for animation in self.animations.keys():
             full_path = character_path + animation + '.png'
@@ -140,14 +91,91 @@ class Player2(Player):
             self.frame_index = 0
 
         image = animation[int(self.frame_index)]
-        if self.facing_right:
+        if self.facing == 'right':
+            self.image = image
+        else:
+            flipped_image = pygame.transform.flip(image, True, False)
+            self.image = flipped_image
+
+    def get_status(self):
+        if self.direction.y != 0:
+            self.status = 'jumpfall2'
+        elif self.direction.x != 0:
+            self.status = 'run6'
+        else:
+            self.status = 'idle2'
+
+    def get_input(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_UP] and keys[pygame.K_RIGHT]:
+            self.direction.x = 1
+            self.facing = 'right'
+            if self.on_ground:
+                self.jump()
+        elif keys[pygame.K_UP] and keys[pygame.K_LEFT]:
+            self.direction.x = -1
+            self.facing = 'left'
+            if self.on_ground:
+                self.jump()
+        elif keys[pygame.K_RIGHT]:
+            self.direction.x = 1
+            self.facing = 'right'
+        elif keys[pygame.K_LEFT]:
+            self.direction.x = -1
+            self.facing = 'left'
+        elif keys[pygame.K_UP] and self.on_ground:
+            self.jump()
+        else:
+            self.direction.x = 0
+
+        if keys[pygame.K_DOWN] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            self.create_magic('bullet')
+
+    def update(self):
+        super().update()
+        self.get_status()
+        self.animate()
+
+class Player2(Player):
+    def __init__(self, pos, create_magic):
+        super().__init__(pos, create_magic)
+        self.player_number = 2
+        self.import_assets('assets/Wizard/')
+        self.image = None
+        self.status = 'idle5'
+        self.facing = 'left'
+
+    def import_assets(self, asset):
+        character_path = asset
+        self.animations = {'run6':[], 'hurt2':[], 'idle5':[], 'jump1':[], 'falling2':[], 'castspell4':[], 'groundrecovery3':[], 'repeatcastspell4':[], 'jumpcastspell4':[]}
+
+        for animation in self.animations.keys():
+            full_path = character_path + animation + '.png'
+            self.animations[animation] = super().get_frames(full_path, 32, 32, 1, (0, 0, 0), int(animation[len(animation) - 1]))
+
+    def animate(self):
+        animation = self.animations[self.status]
+
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(animation):
+            self.frame_index = 0
+
+        image = animation[int(self.frame_index)]
+        if self.facing == 'right':
             self.image = image
         else:
             flipped_image = pygame.transform.flip(image, True, False).convert_alpha()
             self.image = flipped_image
 
     def get_status(self):
-        if self.direction.y < 0:
+        if self.attacking and self.direction.y > 0:
+            self.status = "jumpcastspell4"
+        elif self.attacking:
+            self.status = "repeatcastspell4"
+        elif self.direction.y < 0:
             self.status = 'jump1'
         elif self.direction.y > 0:
             self.status = 'falling2'
@@ -159,16 +187,31 @@ class Player2(Player):
     def get_input(self):
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_d]:
+        if keys[pygame.K_w] and keys[pygame.K_d]:
             self.direction.x = 1
-            self.facing_right = True
+            self.facing = 'right'
+            if self.on_ground:
+                self.jump()
+        elif keys[pygame.K_w] and keys[pygame.K_a]:
+            self.direction.x = -1
+            self.facing = 'left'
+            if self.on_ground:
+                self.jump()
+        elif keys[pygame.K_d]:
+            self.direction.x = 1
+            self.facing = 'right'
         elif keys[pygame.K_a]:
             self.direction.x = -1
-            self.facing_right = False
-        elif keys[pygame.K_SPACE] and self.on_ground:
+            self.facing = 'left'
+        elif keys[pygame.K_w] and self.on_ground:
             self.jump()
         else:
             self.direction.x = 0
+
+        if keys[pygame.K_SPACE] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            self.create_magic('wizard_spell')
 
     def update(self):
         super().update()
