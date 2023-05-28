@@ -94,7 +94,7 @@ class Player1(Player):
         if self.facing == 'right':
             self.image = image
         else:
-            flipped_image = pygame.transform.flip(image, True, False)
+            flipped_image = pygame.transform.flip(image, True, False).convert_alpha()
             self.image = flipped_image
 
     def get_status(self):
