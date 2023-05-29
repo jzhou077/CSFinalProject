@@ -7,7 +7,7 @@ from magic import *
 from ui import UI
 from background import *
 
-class Level:
+class Game:
     def __init__(self, surface):
         self.display_surface = surface
         self.setup_level()
@@ -178,3 +178,10 @@ class Level:
         #update player 2
         self.player2.update()
         self.player2.draw(self.display_surface)
+
+        if self.player1.sprite.check_alive() == False:
+            return 2
+        elif self.player2.sprite.check_alive() == False:
+            return 1
+        
+        return -1

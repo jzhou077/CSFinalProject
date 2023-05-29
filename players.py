@@ -58,10 +58,9 @@ class Player(pygame.sprite.Sprite):
 
     def check_alive(self):
         if self.current_health <= 0:
-            pass
+            return False
 
     def update(self):
-        self.check_alive()
         self.get_input()
         self.keep_on_map()
         self.cooldowns()
