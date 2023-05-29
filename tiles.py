@@ -11,3 +11,8 @@ class TerrainTile(Tile):
     def __init__(self, pos, size, surface):
         super().__init__(pos, size)
         self.image.blit(surface, (0, 0))
+
+class WaterTile(TerrainTile):
+    def __init__(self, pos, size, surface):
+        super().__init__(pos, size, surface)
+        self.image.set_alpha(220)
