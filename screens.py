@@ -53,7 +53,7 @@ def instructions(screen):
         line2 = smallFont.render("Player 1 is Agent Colt. Use the arrow keys to control him. Press down arrow to attack!", False, TEXT_COLOR)
         screen.blit(line2, (SCREEN_WIDTH/2 - line2.get_width()/2, 150))
 
-        line3 = smallFont.render("Player 2 is Wizard Luna. Use W, S, D to control her. Press spacebar to attack!", False, TEXT_COLOR)
+        line3 = smallFont.render("Player 2 is Wizard Luna. Use W, A, D to control her. Press S to attack!", False, TEXT_COLOR)
         screen.blit(line3, (SCREEN_WIDTH/2 - line3.get_width()/2, 200))
 
         menu_label = largeFont.render("MAIN MENU", False, TEXT_COLOR)

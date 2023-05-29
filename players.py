@@ -207,7 +207,7 @@ class Player2(Player):
         else:
             self.direction.x = 0
 
-        if keys[pygame.K_SPACE] and not self.attacking:
+        if keys[pygame.K_s] and not self.attacking:
             self.attacking = True
             self.attack_time = pygame.time.get_ticks()
             self.create_magic('wizard_spell')
